@@ -4,13 +4,16 @@ import (
 	"context"
 	"net/http"
 
+	"github.com.br/abraaolevi/rinha-backend-2024/config"
 	"github.com.br/abraaolevi/rinha-backend-2024/internal/database"
 	apphttp "github.com.br/abraaolevi/rinha-backend-2024/internal/http"
 )
 
 func main() {
 	ctx := context.Background()
-	initializeDatabase(ctx)
+	cfg := config.ReadConfig()
+
+	initializeDatabase(ctx, *cfg)
 
 	mux := http.NewServeMux()
 	initializeRoutes(mux)
@@ -20,10 +23,8 @@ func main() {
 	}
 }
 
-func initializeDatabase(ctx context.Context) {
-	// connectionString := "postgresql://admin:123@db:5432/rinha"
-	connectionString := "postgresql://admin:123@localhost:5432/rinha"
-	_, err := database.NewConnection(ctx, connectionString)
+func initializeDatabase(ctx context.Context, cfg config.Config) {
+	_, err := database.NewConnection(ctx, cfg.GetPostgresConnectionString())
 	if err != nil {
 		panic(err)
 	}
