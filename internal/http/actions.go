@@ -33,6 +33,11 @@ func CreateTransaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !service.HasAccount(accountId) {
+		JsonError(w, account.ErrAccountNotFound)
+		return
+	}
+
 	transaction, err := internal.NewTransactionFromRequest(r)
 	if err != nil {
 		JsonError(w, err)
@@ -55,7 +60,13 @@ func GetStatement(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stm, err := service.GetStatement(accountId)
+	acc, err := service.GetAccount(accountId)
+	if err != nil {
+		JsonError(w, account.ErrAccountNotFound)
+		return
+	}
+
+	stm, err := service.GetStatement(accountId, acc)
 	if err != nil {
 		JsonError(w, err)
 		return

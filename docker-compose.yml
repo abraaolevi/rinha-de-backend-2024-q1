@@ -1,6 +1,28 @@
 version: "3.9"
 
+# api, nginx, db
+# CPU 1.5
+# MEM 550 MB
+
 services:
+  # air_api:
+  #   image: cosmtrek/air
+  #   working_dir: /app
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - DATABASE_USERNAME=${DATABASE_USERNAME}
+  #     - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+  #     - DATABASE_HOST=${DATABASE_HOST}
+  #     - DATABASE_PORT=${DATABASE_PORT}
+  #     - DATABASE_DBNAME=${DATABASE_DBNAME}
+  #   volumes:
+  #     - ./:/app
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+
+
   api01: &api
     # image: ana/minha-api-matadora:latest
     build:
@@ -21,8 +43,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.6"
-          memory: "200MB"
+          cpus: "0.15"    # 0.3
+          memory: "50MB" # 100MB
 
   api02:
     <<: *api 
@@ -42,8 +64,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.17"
-          memory: "10MB"
+          cpus: "0.2"
+          memory: "30MB"
 
   db:
     image: postgres:16.2-alpine3.19
@@ -56,11 +78,12 @@ services:
       - 5432:5432
     volumes:
       - ./sql:/docker-entrypoint-initdb.d/
+    command: postgres -c checkpoint_timeout=600 -c max_wal_size=4096
     deploy:
       resources:
         limits:
-          cpus: "0.13"
-          memory: "140MB"
+          cpus: "1"
+          memory: "410MB"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d rinha -U admin"]
       interval: 3s
@@ -69,5 +92,5 @@ services:
 
 networks:
   default:
-    driver: bridge
+    driver: host
     name: rinha-nginx-2024q1

@@ -6,10 +6,10 @@ import (
 	"unicode/utf8"
 )
 
-var ErrUnmarshal = NewError("invalid body request", http.StatusBadRequest)
-var ErrInvalidTransactionAmount = NewError("invalid Transaction Value. It should be an integer positive value", http.StatusBadRequest)
-var ErrInvalidTransactionType = NewError("invalid Transaction Type. It should be \"c\" for Credit or \"d\" for Debit", http.StatusBadRequest)
-var ErrInvalidTransactionDescription = NewError("invalid Transaction Description. It should be between 1 and 10 characters", http.StatusBadRequest)
+var ErrUnmarshal = NewError("invalid body request", http.StatusUnprocessableEntity)
+var ErrInvalidTransactionAmount = NewError("invalid Transaction Value. It should be a positive integer > 0", http.StatusUnprocessableEntity)
+var ErrInvalidTransactionType = NewError("invalid Transaction Type. It should be \"c\" for Credit or \"d\" for Debit", http.StatusUnprocessableEntity)
+var ErrInvalidTransactionDescription = NewError("invalid Transaction Description. It should be between 1 and 10 characters", http.StatusUnprocessableEntity)
 
 type Transaction struct {
 	Amount      int64  `json:"valor"`     // deve ser um número inteiro positivo que representa centavos. Por exemplo, R$ 10 são 1000 centavos.
@@ -31,7 +31,7 @@ func NewTransactionFromRequest(r *http.Request) (*Transaction, error) {
 }
 
 func (t Transaction) Validate() error {
-	if t.Amount < 0 {
+	if t.Amount < 1 {
 		return ErrInvalidTransactionAmount
 	}
 

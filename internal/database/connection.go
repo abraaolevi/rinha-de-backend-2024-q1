@@ -19,6 +19,10 @@ func NewConnection(ctx context.Context, connectionString string) (*pgxpool.Pool,
 		return nil, fmt.Errorf("create connection pool: %w", err)
 	}
 
+	// config.MaxConnIdleTime = time.Second
+	// config.MinConns = 0
+	// config.MaxConns = 10
+
 	Conn, err = pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
 		return nil, err

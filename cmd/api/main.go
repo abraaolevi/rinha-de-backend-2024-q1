@@ -13,27 +13,19 @@ func main() {
 	ctx := context.Background()
 	cfg := config.ReadConfig()
 
-	initializeDatabase(ctx, *cfg)
+	conn, err := database.NewConnection(ctx, cfg.GetPostgresConnectionString())
+	if err != nil {
+		panic(err)
+	}
+	defer conn.Close()
+
+	apphttp.Configure()
 
 	mux := http.NewServeMux()
-	initializeRoutes(mux)
+	mux.HandleFunc("POST /clientes/{id}/transacoes", apphttp.CreateTransaction)
+	mux.HandleFunc("GET /clientes/{id}/extrato", apphttp.GetStatement)
 
 	if err := http.ListenAndServe(":3000", mux); err != nil {
 		panic(err)
 	}
-}
-
-func initializeDatabase(ctx context.Context, cfg config.Config) {
-	_, err := database.NewConnection(ctx, cfg.GetPostgresConnectionString())
-	if err != nil {
-		panic(err)
-	}
-	// defer conn.Close()
-}
-
-func initializeRoutes(mux *http.ServeMux) {
-	apphttp.Configure()
-
-	mux.HandleFunc("POST /clientes/{id}/transacoes", apphttp.CreateTransaction)
-	mux.HandleFunc("GET /clientes/{id}/extrato", apphttp.GetStatement)
 }

@@ -51,7 +51,9 @@ func (r *RepositoryPostgres) GetAccount(id uint64, tx *pgx.Tx) (*internal.Accoun
 
 	err := (*tx).QueryRow(
 		r.Ctx,
-		"SELECT account_limit, balance FROM accounts WHERE id = $1",
+		`SELECT account_limit, balance 
+			FROM accounts 
+			WHERE id = $1`,
 		id,
 	).Scan(&account.Limit, &account.Balance)
 
@@ -69,7 +71,9 @@ func (r *RepositoryPostgres) GetAccount(id uint64, tx *pgx.Tx) (*internal.Accoun
 func (r *RepositoryPostgres) UpdateAccountBalance(accountId uint64, newBalance int64, tx *pgx.Tx) error {
 	_, err := (*tx).Exec(
 		r.Ctx,
-		"UPDATE accounts SET balance = $1 WHERE id = $2",
+		`UPDATE accounts 
+			SET balance = $1 
+			WHERE id = $2`,
 		newBalance,
 		accountId,
 	)
@@ -79,7 +83,8 @@ func (r *RepositoryPostgres) UpdateAccountBalance(accountId uint64, newBalance i
 func (r *RepositoryPostgres) AddStatement(accountId uint64, transaction internal.Transaction, tx *pgx.Tx) error {
 	_, err := (*tx).Exec(
 		r.Ctx,
-		"INSERT INTO transactions (account_id, amount, operation, description) VALUES ($1, $2, $3, $4)",
+		`INSERT INTO transactions (account_id, amount, operation, description) 
+			VALUES ($1, $2, $3, $4)`,
 		accountId,
 		transaction.Amount,
 		transaction.Type,
@@ -91,7 +96,11 @@ func (r *RepositoryPostgres) AddStatement(accountId uint64, transaction internal
 func (r *RepositoryPostgres) GetStatementList(accountId uint64, count uint, tx *pgx.Tx) ([]internal.TransactionStatement, error) {
 	rows, err := (*tx).Query(
 		r.Ctx,
-		"SELECT amount, operation, description, created_at FROM transactions WHERE account_id = $1 ORDER BY created_at DESC LIMIT $2",
+		`SELECT amount, operation, description, created_at 
+			FROM transactions 
+			WHERE account_id = $1 
+			ORDER BY created_at DESC 
+			LIMIT $2`,
 		accountId,
 		count,
 	)
