@@ -1,0 +1,14 @@
+http:
+  routers:
+    to-api:
+      entryPoints:
+        - web
+      rule: "Host(`localhost`)"
+      service: api-service
+
+  services:
+    api-service:
+      loadBalancer:
+        servers:
+        - url: http://api01:3000
+        - url: http://api02:3000

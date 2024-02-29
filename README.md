@@ -43,6 +43,4 @@ nginx 50bm 0.2
 
 file:///Users/abraaolevi/dev/rinha-de-backend-2024-q1/load-test/user-files/results/rinhabackendcrebitossimulation-20240229115249261/index.html
 
-TODO:
-- tunar nginx
-- tunar banco
+10) Aprendi um novo comando: `docker stats` pra ver a utilização dos recursos dos containers

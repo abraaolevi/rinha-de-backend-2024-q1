@@ -43,7 +43,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.15"    # 0.3
+          cpus: "0.25"   # 0.5
           memory: "50MB" # 100MB
 
   api02:
@@ -65,7 +65,25 @@ services:
       resources:
         limits:
           cpus: "0.2"
-          memory: "30MB"
+          memory: "50MB"
+
+  # proxy:
+  #   image: traefik:3.0
+  #   hostname: proxy
+  #   volumes:
+  #     - ./traefik-static.yaml:/etc/traefik/traefik.yaml:ro  # static traefik configuration
+  #     - ./traefik-dynamic.yaml:/etc/traefik/dynamic.yaml:ro  # dynamic traefik configuration
+  #   depends_on:
+  #     - api01
+  #     - api02
+  #   ports:
+  #     - "9999:9999"
+  #     - "8080:8080"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: "0.2"
+  #         memory: "70MB"
 
   db:
     image: postgres:16.2-alpine3.19
@@ -82,8 +100,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1"
-          memory: "410MB"
+          cpus: "0.8"
+          memory: "400MB"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d rinha -U admin"]
       interval: 3s
@@ -92,5 +110,5 @@ services:
 
 networks:
   default:
-    driver: host
+    driver: bridge
     name: rinha-nginx-2024q1
