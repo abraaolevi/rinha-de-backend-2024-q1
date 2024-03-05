@@ -108,7 +108,7 @@ func (as *Service) CreateTransactionDeprecated(accountId uint64, transaction int
 		return nil, err
 	}
 
-	account, err := as.Repo.GetAccount(accountId, tx)
+	account, err := as.Repo.GetAccount(accountId, tx, true)
 	if err != nil {
 		return nil, as.Repo.EndTransactionWithError(tx, err)
 	}
@@ -195,7 +195,7 @@ func (as *Service) GetStatementDeprecated(accountId uint64) (*internal.Statement
 		return nil, err
 	}
 
-	account, err := as.Repo.GetAccount(accountId, tx)
+	account, err := as.Repo.GetAccount(accountId, tx, false)
 	if err != nil {
 		return nil, as.Repo.EndTransactionWithError(tx, err)
 	}

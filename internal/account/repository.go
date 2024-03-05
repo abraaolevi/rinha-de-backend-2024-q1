@@ -14,7 +14,7 @@ type Repository interface {
 	BeginTransaction() (*pgx.Tx, error)
 	EndTransaction(tx *pgx.Tx) error
 	EndTransactionWithError(tx *pgx.Tx, err error) error
-	GetAccount(id uint64, tx *pgx.Tx) (*internal.Account, error)
+	GetAccount(id uint64, tx *pgx.Tx, forUpdate bool) (*internal.Account, error)
 	GetStatementList(accountId uint64, count uint, tx *pgx.Tx) ([]internal.TransactionStatement, error)
 	UpdateAccountBalance(id uint64, newBalance int64, tx *pgx.Tx) error
 }
@@ -46,16 +46,17 @@ func (r *RepositoryPostgres) EndTransactionWithError(tx *pgx.Tx, err error) erro
 	return err
 }
 
-func (r *RepositoryPostgres) GetAccount(id uint64, tx *pgx.Tx) (*internal.Account, error) {
+func (r *RepositoryPostgres) GetAccount(id uint64, tx *pgx.Tx, forUpdate bool) (*internal.Account, error) {
 	var account = internal.Account{}
 
-	err := (*tx).QueryRow(
-		r.Ctx,
-		`SELECT account_limit, balance 
-			FROM accounts 
-			WHERE id = $1`,
-		id,
-	).Scan(&account.Limit, &account.Balance)
+	sql := `SELECT account_limit, balance
+		FROM accounts
+		WHERE id = $1 `
+	if forUpdate {
+		sql += "FOR UPDATE"
+	}
+
+	err := (*tx).QueryRow(r.Ctx, sql, id).Scan(&account.Limit, &account.Balance)
 
 	if err == pgx.ErrNoRows {
 		return nil, ErrAccountNotFound
@@ -99,7 +100,7 @@ func (r *RepositoryPostgres) GetStatementList(accountId uint64, count uint, tx *
 		`SELECT amount, operation, description, created_at 
 			FROM transactions 
 			WHERE account_id = $1 
-			ORDER BY created_at DESC 
+			ORDER BY id DESC 
 			LIMIT $2`,
 		accountId,
 		count,
