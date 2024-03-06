@@ -10,7 +10,6 @@ import (
 )
 
 type Service struct {
-	Repo Repository
 }
 
 func (as *Service) GetAccount(accountId uint64) (*internal.Account, error) {
@@ -82,7 +81,7 @@ func (as *Service) CreateTransaction(accountId uint64, transaction internal.Tran
 	}
 
 	if err != nil {
-		return nil, ErrInsufficientBalance
+		return nil, internal.ErrInsufficientBalance
 	}
 
 	_, err = database.Conn.Exec(
@@ -100,44 +99,6 @@ func (as *Service) CreateTransaction(accountId uint64, transaction internal.Tran
 	}
 
 	return &account, nil
-}
-
-func (as *Service) CreateTransactionDeprecated(accountId uint64, transaction internal.Transaction) (*internal.Account, error) {
-	tx, err := as.Repo.BeginTransaction()
-	if err != nil {
-		return nil, err
-	}
-
-	account, err := as.Repo.GetAccount(accountId, tx, true)
-	if err != nil {
-		return nil, as.Repo.EndTransactionWithError(tx, err)
-	}
-
-	limit := account.Limit + account.Balance
-	if transaction.Type == "d" && transaction.Amount > limit {
-		return nil, as.Repo.EndTransactionWithError(tx, ErrInsufficientBalance)
-	}
-
-	var amount = transaction.Amount
-	if transaction.Type == "d" {
-		amount = -transaction.Amount
-	}
-
-	account.Balance = account.Balance + amount
-
-	if err := as.Repo.UpdateAccountBalance(accountId, account.Balance, tx); err != nil {
-		return nil, as.Repo.EndTransactionWithError(tx, err)
-	}
-
-	if err := as.Repo.AddStatement(accountId, transaction, tx); err != nil {
-		return nil, as.Repo.EndTransactionWithError(tx, err)
-	}
-
-	if err := as.Repo.EndTransaction(tx); err != nil {
-		return nil, err
-	}
-
-	return account, nil
 }
 
 func (as *Service) GetStatement(accountId uint64, account *internal.Account) (*internal.Statement, error) {
@@ -173,40 +134,6 @@ func (as *Service) GetStatement(accountId uint64, account *internal.Account) (*i
 		}
 		t.Date = c.Format(time.RFC3339Nano)
 		transactions = append(transactions, t)
-	}
-
-	currentTime := time.Now().Format(time.RFC3339Nano)
-
-	stm := internal.Statement{
-		Balance: internal.BalanceStatement{
-			Total: account.Balance,
-			Date:  currentTime,
-			Limit: account.Limit,
-		},
-		Transactions: transactions,
-	}
-
-	return &stm, nil
-}
-
-func (as *Service) GetStatementDeprecated(accountId uint64) (*internal.Statement, error) {
-	tx, err := as.Repo.BeginTransaction()
-	if err != nil {
-		return nil, err
-	}
-
-	account, err := as.Repo.GetAccount(accountId, tx, false)
-	if err != nil {
-		return nil, as.Repo.EndTransactionWithError(tx, err)
-	}
-
-	transactions, err := as.Repo.GetStatementList(accountId, 10, tx)
-	if err != nil {
-		return nil, as.Repo.EndTransactionWithError(tx, err)
-	}
-
-	if err := as.Repo.EndTransaction(tx); err != nil {
-		return nil, err
 	}
 
 	currentTime := time.Now().Format(time.RFC3339Nano)

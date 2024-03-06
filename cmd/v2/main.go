@@ -6,7 +6,7 @@ import (
 
 	"github.com.br/abraaolevi/rinha-backend-2024/config"
 	"github.com.br/abraaolevi/rinha-backend-2024/internal/database"
-	apphttp "github.com.br/abraaolevi/rinha-backend-2024/internal/http"
+	apphttp "github.com.br/abraaolevi/rinha-backend-2024/internal/v2/http"
 )
 
 func main() {

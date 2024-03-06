@@ -59,7 +59,7 @@ func (r *RepositoryPostgres) GetAccount(id uint64, tx *pgx.Tx, forUpdate bool) (
 	err := (*tx).QueryRow(r.Ctx, sql, id).Scan(&account.Limit, &account.Balance)
 
 	if err == pgx.ErrNoRows {
-		return nil, ErrAccountNotFound
+		return nil, internal.ErrAccountNotFound
 	}
 
 	if err != nil {

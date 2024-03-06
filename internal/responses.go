@@ -1,10 +1,8 @@
-package http
+package internal
 
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com.br/abraaolevi/rinha-backend-2024/internal"
 )
 
 func JsonResponse(w http.ResponseWriter, data interface{}, statusCode int) {
@@ -21,10 +19,9 @@ func JsonResponse(w http.ResponseWriter, data interface{}, statusCode int) {
 
 func JsonError(w http.ResponseWriter, err error) {
 	var code = http.StatusInternalServerError
-	// var message = "interval server error"
-	var message = err.Error()
+	var message = "interval server error"
 
-	if ie, ok := err.(*internal.Error); ok {
+	if ie, ok := err.(*Error); ok {
 		code = ie.Status
 		message = ie.Error()
 	}
