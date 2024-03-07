@@ -11,6 +11,7 @@ type Config struct {
 	PostgresHost     string
 	PostgresPort     string
 	PostgresDbName   string
+	ServerPort       string
 }
 
 func ReadConfig() *Config {
@@ -20,6 +21,7 @@ func ReadConfig() *Config {
 		PostgresHost:     os.Getenv("DATABASE_HOST"),
 		PostgresPort:     os.Getenv("DATABASE_PORT"),
 		PostgresDbName:   os.Getenv("DATABASE_DBNAME"),
+		ServerPort:       os.Getenv("SERVER_PORT"),
 	}
 }
 
