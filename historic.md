@@ -68,3 +68,8 @@ file:///Users/abraaolevi/dev/rinha-de-backend-2024-q1/load-test/user-files/resul
 - https://gist.github.com/rgreenjr/3637525
 - https://hackernoon.com/postgresql-transaction-isolation-levels-with-go-examples-lt5g3yh5
 - https://www.crunchydata.com/blog/prepared-statements-in-transaction-mode-for-pgbouncer
+
+### Proximas leituras: goroutines
+
+- https://medium.com/insiderengineering/concurrent-http-requests-in-golang-best-practices-and-techniques-f667e5a19dea
+- https://medium.com/@cerebrovinny/golang-goroutines-powering-high-performance-applications-767742d961ce

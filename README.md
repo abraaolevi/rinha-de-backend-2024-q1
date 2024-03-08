@@ -27,3 +27,5 @@ Então um outro "hack" seria aumentar o `checkpoint_timeout` e o `max_wal_size` 
 Ainda tentando achar otimizações simples, adicionei indices nas tabela, mesmo nas chaves primarias. (Nesse caso também não senti diferença, porém mantive essa alteração)
 
 Nessa versão, resolvi alterar a estratégia, pois até então eu estava: abrindo uma transaction, lendo do banco, validando no código, alterando no código, escrevendo no banco e finalizando a transaction. A nova estratégia foi jogar toda essa regra para o banco usando uma _function_. No geral todos os indicadores melhoraram e não teve KO. Então mantive essa estratégia.
+
+Também alterei a comunicação entre a aplicação GO, Nginx e Postgres, para ser via Unix Sockets. Vantagens: Comunicação mais rápida, mais eficiente, maior estabilidade do que comunicação em rede e baixo overhead. Desvantagem: é limitado a mesma máquina, mas nesse caso não parece ser um problema.
