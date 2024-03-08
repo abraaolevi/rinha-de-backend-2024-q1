@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -29,6 +30,9 @@ func main() {
 	mux.HandleFunc("POST /clientes/{id}/transacoes", handler.HandlePostTransactions)
 	mux.HandleFunc("GET /clientes/{id}/extrato", handler.HandleGetStatements)
 
+	// Unix Socket
+
+	// Ref: https://eli.thegreenplace.net/2019/unix-domain-sockets-in-go/
 	socketPath := "/app_tmp/rinha.sock"
 	os.Remove(socketPath)
 
@@ -42,7 +46,18 @@ func main() {
 	}
 	defer listener.Close()
 
-	if err := server.Serve(listener); err != nil {
+	go func() {
+		fmt.Printf("Listen at [%s]", socketPath)
+		if err := server.Serve(listener); err != nil {
+			panic(err)
+		}
+	}()
+
+	// HTTP
+
+	port := ":" + os.Getenv("SERVER_PORT")
+	fmt.Printf("Listen at [%s]", port)
+	if err := http.ListenAndServe(port, mux); err != nil {
 		panic(err)
 	}
 }
