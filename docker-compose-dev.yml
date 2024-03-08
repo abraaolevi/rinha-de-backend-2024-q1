@@ -44,8 +44,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.25"
-          memory: "50MB"
+          cpus: "0.17"
+          memory: "20MB"
 
   api02:
     <<: *api
@@ -77,8 +77,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.2"
-          memory: "20MB"
+          cpus: "0.16"
+          memory: "10MB"
 
   db:
     image: postgres:16.2-alpine3.19
@@ -96,8 +96,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.8"
-          memory: "300MB"
+          cpus: "1"
+          memory: "500MB"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d rinha -U admin"]
       interval: 3s
