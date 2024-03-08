@@ -16,8 +16,8 @@ create unlogged table transactions (
     created_at timestamp default current_timestamp 
 );
 
-create index if not exists idx_account_id on accounts(id);
-create index if not exists idx_transactions_id on transactions(id desc);
+create index if not exists idx_transaction_id on transactions(id desc);
+create index if not exists idx_account_id_on_transaction on transactions(account_id);
 
 create or replace function update_balance(
     account_id int,
